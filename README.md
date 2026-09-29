@@ -164,3 +164,63 @@ For other tools see [hjson.github.io](http://hjson.github.io).
 Solutions in the root folder target .NET Core.
 
 Solutions for .NET 4.x can be found in the legacy folder.
+
+# Local verification
+
+`verify.sh` is a single entry point that proves the source tree, the test
+fixtures and the published NuGet package all come from the same commit. It
+works regardless of the directory you run it from (it always switches to the
+repository root) and stops at the first failing stage.
+
+To restore dependencies and compile only:
+
+```
+dotnet restore
+dotnet build Hjson.slnx --no-restore
+```
+
+To run the full gate:
+
+```
+./verify.sh
+cat artifacts/verification-summary.txt
+find artifacts/package-a -maxdepth 1 -name '*.nupkg' -print
+```
+
+The stages run in a fixed order: restore, format check, Release build, tests,
+two isolated package builds (`artifacts/package-a`, `artifacts/package-b`),
+package content gate, a negative self-test, fixture gate, and a reproducible
+hash comparison. Only `dotnet restore` may use the network; every later .NET
+command runs with `--no-restore` and an unreachable proxy guard, so the rest
+of the pipeline also works offline.
+
+The package content gate enforces that:
+
+- `lib/` only contains the expected target framework assets,
+- `LICENSE` (identical to the repository file) and the generated XML
+  documentation are inside the package,
+- no file from `test/assets`, and no `cli`/`sample` output, is shipped,
+- the nuspec declares no package dependencies.
+
+The negative self-test copies the package into a throwaway output directory,
+adds a stray file, asserts the gate rejects it, deletes the probe directory
+and continues the normal checks.
+
+The two packages are hashed after canonicalization (entry names and payload
+hashes in sorted order): volatile ZIP container timestamps are ignored, but
+the nuspec and every payload entry are part of the hash, so the metadata is
+not excluded.
+
+The package version has a single source: the `<Version>` property in
+`Hjson/Hjson.csproj`.
+
+## Summary states
+
+`artifacts/verification-summary.txt` always lists every stage in fixed order,
+even after a failure:
+
+- `PASS`: the stage completed successfully.
+- `FAIL`: the stage failed; `FAILED_STAGE` names it and the script exits
+  non-zero. Details point at the log under `artifacts/logs/`.
+- `SKIP`: the stage never ran, because an earlier stage failed (or because the
+  pipeline aborted before reaching it).

@@ -12,7 +12,7 @@
     <Description>Hjson, a user interface for JSON. Relaxed syntax, fewer mistakes, more comments. For details go to http://hjson.github.io.</Description>
     <Copyright>Copyright Christian Zangl</Copyright>
     <PackageTags>JSON;comments;config;hjson;parser;serializer</PackageTags>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://hjson.github.io</PackageProjectUrl>
     <RepositoryUrl>https://github.com/hjson/hjson-cs</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <None Include="../README.md" Pack="true" PackagePath="/" />
+    <None Include="../LICENSE" Pack="true" PackagePath="" />
   </ItemGroup>
 
 </Project>

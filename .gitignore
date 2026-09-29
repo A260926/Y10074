@@ -1,4 +1,5 @@
 /nuget
+/artifacts
 bin
 obj
 packages
