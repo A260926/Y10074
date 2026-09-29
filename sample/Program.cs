@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+
 using Hjson;
 
 // note: this sample uses the Hjson library directly.
@@ -28,5 +29,3 @@ wdata.Comments["hugo"] = "just another test";
 using var sw = new StringWriter();
 HjsonValue.Save(wdata, sw, new HjsonOptions { KeepWsc = true });
 Console.WriteLine(sw.ToString());
-
-

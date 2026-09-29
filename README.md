@@ -149,6 +149,30 @@ jsonObject.ToString(); // plain
 
 Also see the [sample](sample).
 
+# Local verification
+
+Install dependencies and perform a normal local build with:
+
+```sh
+dotnet restore && dotnet build Hjson.slnx --no-restore
+```
+
+For release verification, run the repository entry point from any working directory:
+
+```sh
+./verify.sh
+```
+
+The script always resolves paths from the repository root and writes `artifacts/verification-summary.txt`. It runs restore, formatting, Release build, tests, fixture discovery checks, packaging, package content checks, a negative package-output test, cleanup, a second isolated package build, and normalized package hash comparison. Only `dotnet restore` is permitted to fetch packages; every later command uses the restored build assets.
+
+The two packages are written to `artifacts/package-a` and `artifacts/package-b`. Their hash comparison includes the nuspec, package metadata files and every packaged file while normalizing only ZIP entry timestamps. The canonical package to publish is the single `.nupkg` in `artifacts/package-a`.
+
+Summary statuses:
+
+- `SKIP`: the stage had not started when verification stopped.
+- `PASS`: the stage completed successfully.
+- `FAIL`: the stage failed; `FAILED_STAGE` names the failed stage and its detailed log is under `artifacts/logs`.
+
 # API
 
 See [api.md](api.md).

@@ -14,6 +14,9 @@ bower_components/
 .pnp.*
 dist/
 build/
+!build/
+build/*
+!build/verify-package.py
 out/
 target/
 .next/
@@ -39,6 +42,10 @@ Pods/
 coverage/
 .coverage
 .nyc_output/
+.artifacts/
+artifacts/
+__pycache__/
+*.py[cod]
 .cache/
 .parcel-cache/
 .vite/
